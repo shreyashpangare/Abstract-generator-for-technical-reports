@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Abstract Generator for Technical Reports</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background: linear-gradient(to right, #e3f2fd, #bbdefb);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #0d47a1;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border 0.3s;
+    }
+
+    textarea:focus {
+      border-color: #64b5f6;
+      outline: none;
+      box-shadow: 0 0 5px rgba(100, 181, 246, 0.5);
+    }
+
+    button {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background: #1976d2;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background: #1565c0;
+      transform: scale(1.03);
+    }
+
+    #response {
+      margin-top: 2rem;
+      white-space: pre-wrap;
+      background: #e8f5e9;
+      color: #1b5e20;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Abstract Generator for Technical Reports</h1>
+
+    <label for="report">Paste Full Technical Report</label>
+    <textarea id="report" rows="15" placeholder="Paste your full technical report here..."></textarea>
+
+    <button onclick="generateAbstract()">Generate Abstract</button>
+
+    <div id="response"></div>
+  </div>
+
+  <script>
+    async function generateAbstract() {
+      const report = document.getElementById('report').value;
+
+      if (!report.trim()) {
+        document.getElementById('response').innerText = 'Please paste the technical report first.';
+        return;
+      }
+
+      const prompt = `You are an expert technical writer. Read the following full technical report and write a well-crafted abstract summarizing its key points:\n\n${report}`;
+
+      document.getElementById('response').innerText = 'Generating abstract...';
+
+      try {
+        const res = await fetch('http://localhost:5000/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+
+        const data = await res.json();
+        document.getElementById('response').innerText = data.response || data.error || 'No response received.';
+      } catch (error) {
+        document.getElementById('response').innerText = 'Error connecting to server.';
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
